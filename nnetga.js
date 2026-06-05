@@ -189,35 +189,37 @@ function add_net(popIndex, num_input, num_layers, num_neurons, num_output) {
                     iChromo += 1;
                 }
             }
-            Worlds.Pops[popIndex].Agents[iAgent].Net.Input = Array(Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs).fill(0.0);
-            for (iInput = 0; iInput < Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs; iInput++) {
-                Worlds.Pops[popIndex].Agents[iAgent].Net.Input[iInput] = 333;
-            }
-            Worlds.Pops[popIndex].Agents[iAgent].Net.Output = [...Array(Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs)].map(x => { return {}; });
+            if (iLayer === Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers - 2) {
+                Worlds.Pops[popIndex].Agents[iAgent].Net.Input = Array(Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs).fill(0.0);
+                for (iInput = 0; iInput < Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs; iInput++) {
+                    Worlds.Pops[popIndex].Agents[iAgent].Net.Input[iInput] = 333;
+                }
+                Worlds.Pops[popIndex].Agents[iAgent].Net.Output = [...Array(Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs)].map(x => { return {}; });
 
-            if (Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers >= 2)
-                LastLayerIndex = Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers - 1;
-            else
-                LastLayerIndex = 0;
-
-            Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons = Worlds.Pops[popIndex].Agents[iAgent].Net.Output;
-            Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Index = Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers - 1;
-            Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].NumNeurons = Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs;
-
-            for (iOutput = 0; iOutput < Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs; iOutput++) {
-                Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Index = iOutput;
-                Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Output = 0;
                 if (Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers >= 2)
-                    Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs = Worlds.Pops[popIndex].Agents[iAgent].Net.NeuronsPerLayers + 1;
+                    LastLayerIndex = Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers - 1;
                 else
-                    Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs = Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs + 1;
+                    LastLayerIndex = 0;
 
-                Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Weights = Array(Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs).fill(0.0);
+                Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons = Worlds.Pops[popIndex].Agents[iAgent].Net.Output;
+                Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Index = Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers - 1;
+                Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].NumNeurons = Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs;
 
-                for (iWeight = 0; iWeight < Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].NumInputs; iWeight++) {
-                    Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].Weights[iWeight] = clamped_rand(randMin);
-                    Worlds.Pops[popIndex].Agents[iAgent].Chromo[iChromo] = Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].Weights[iWeight];
-                    iChromo += 1;
+                for (iOutput = 0; iOutput < Worlds.Pops[popIndex].Agents[iAgent].Net.NumOutputs; iOutput++) {
+                    Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Index = iOutput;
+                    Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Output = 0;
+                    if (Worlds.Pops[popIndex].Agents[iAgent].Net.NumLayers >= 2)
+                        Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs = Worlds.Pops[popIndex].Agents[iAgent].Net.NeuronsPerLayers + 1;
+                    else
+                        Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs = Worlds.Pops[popIndex].Agents[iAgent].Net.NumInputs + 1;
+
+                    Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].Weights = Array(Worlds.Pops[popIndex].Agents[iAgent].Net.Output[iOutput].NumInputs).fill(0.0);
+
+                    for (iWeight = 0; iWeight < Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].NumInputs; iWeight++) {
+                        Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].Weights[iWeight] = clamped_rand(randMin);
+                        Worlds.Pops[popIndex].Agents[iAgent].Chromo[iChromo] = Worlds.Pops[popIndex].Agents[iAgent].Net.Layers[LastLayerIndex].Neurons[iOutput].Weights[iWeight];
+                        iChromo += 1;
+                    }
                 }
             }
         }
@@ -354,22 +356,14 @@ function next_gen(PopIndex, Data, crossOption = 1, mutateOption = 1, EliteNum = 
         for (let iChrome = 0; iChrome < Worlds.Pops[PopIndex].Agents[0].NumChromo; iChrome++)
             Baby[iBaby].Chromo[iChromo] = 666.666;
     }
-    // CopyData = list(Data)
-    let CopyData = [...Data]; // prone to error
-    let DataSorted = [];
-    let ScoreElite = [];
-    DataSorted = CopyData.sort();
-    ScoreElite = DataSorted.slice(-EliteNum);
-    let ScoreWorst = DataSorted.slice(0, WorstNum);
+    let RankedData = Data.map((score, index) => ({ score, index })).sort((a, b) => a.score - b.score);
 
     for (iElite = 0; iElite < EliteNum; iElite++) {
-        Elite[iElite] = CopyData.indexOf(ScoreElite[iElite]);
-        CopyData[Elite[iElite]] += (rand() / (RAND_MAX + 1.0)) * 0.0000001;
+        Elite[iElite] = RankedData[RankedData.length - EliteNum + iElite].index;
     }
 
     for (iWorst = 0; iWorst < WorstNum; iWorst++) {
-        Worst[iWorst] = CopyData.indexOf(ScoreWorst[iWorst]);
-        CopyData[Worst[iWorst]] += (rand() / (RAND_MAX + 1.0)) * 0.0000001;
+        Worst[iWorst] = RankedData[iWorst].index;
         Worlds.Pops[PopIndex].Agents[Worst[iWorst]].Score = 0.0;
     }
 
