@@ -1,16 +1,19 @@
 GANeuralNet
 ===================
 
-Web Assembly implementation of Blender-GANeuralNet
+Python implementation of Blender-GANeuralNet
 
 Experiement with genetic algorithm and neural network.
 
+Build (python 3.10):
 
-install emscripten 
+python -m venv .venv
 
-Build:
+source .venv/bin/activate
 
-emcmake cmake -S . -B build
+pip install cython
 
-cmake --build build 
+python setup64.py build_ext --inplace
+
+python test.py
 
