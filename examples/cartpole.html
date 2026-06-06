@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CartPole - NNetGA</title>
+    <style>
+        body { margin: 0; background: #111; color: #ddd; font-family: sans-serif; }
+        #controls { padding: 8px; }
+        canvas { display: block; margin: 0 auto; background: #222; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label>Agents: <input id="agents" type="number" value="50" min="2" max="200"/></label>
+        <label>Generations: <input id="gens" type="number" value="200" min="1" max="5000"/></label>
+        <label>Max Steps: <input id="steps" type="number" value="1000" min="10" max="1000"/></label>
+        <button id="start">Start</button>
+    </div>
+    <canvas id="cp-canvas" width="1200" height="600"></canvas>
+
+    <script type="module">
+        import { startCartPole } from './cartpole.js';
+
+        const startBtn = document.getElementById('start');
+        startBtn.addEventListener('click', () => {
+            const agentNum = parseInt(document.getElementById('agents').value, 10);
+            const generations = parseInt(document.getElementById('gens').value, 10);
+            const maxSteps = parseInt(document.getElementById('steps').value, 10);
+            startCartPole({ agentNum, generations, maxSteps, width: 1200, height: 600 });
+        });
+
+        // auto-start with defaults
+        startCartPole({ agentNum: 50, generations: 200, maxSteps: 1000, width: 1200, height: 600 });
+    </script>
+</body>
+</html>
