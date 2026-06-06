@@ -1,75 +1,76 @@
-import('./nnetga.js').then((nnetga) => {
+import('./nnetga.js').then((m) => {
+    const nnetga = new m.NNetGA();
 
-let agentNum = 50;
-let generations = 1000;
-nnetga.add_pop(1, 0.7, 0.02, 0.5);
-nnetga.add_agent(0, agentNum);
-nnetga.add_net(0, 2, 1, 3, 1);
+    let agentNum = 50;
+    let generations = 1000;
+    nnetga.add_pop(1, 0.7, 0.02, 0.5);
+    nnetga.add_agent(0, agentNum);
+    nnetga.add_net(0, 2, 1, 3, 1);
 
-let test1 = [...Array(agentNum)].map(x => [0, 1]);
-test1 = [test1];
+    let test1 = [...Array(agentNum)].map(x => [0, 1]);
+    test1 = [test1];
 
-let test2 = [...Array(agentNum)].map(x => [0, 0]);
-test2 = [test2];
+    let test2 = [...Array(agentNum)].map(x => [0, 0]);
+    test2 = [test2];
 
-let test3 = [...Array(agentNum)].map(x => [1, 1]);
-test3 = [test3];
+    let test3 = [...Array(agentNum)].map(x => [1, 1]);
+    test3 = [test3];
 
-let test4 = [...Array(agentNum)].map(x => [1, 0]);
-test4 = [test4];
+    let test4 = [...Array(agentNum)].map(x => [1, 0]);
+    test4 = [test4];
 
-function scoreOutput(output, expected) {
-    return (1 - Math.abs(expected - output)) * 100;
-}
-
-function evaluatePopulation() {
-    const a = nnetga.update(test1);
-    const b = nnetga.update(test2);
-    const c = nnetga.update(test3);
-    const d = nnetga.update(test4);
-    const Score = Array(agentNum).fill(0);
-
-    for (let iAgent = 0; iAgent < agentNum; iAgent++) {
-        Score[iAgent] += scoreOutput(a[0][iAgent][0], 1);
-        Score[iAgent] += scoreOutput(b[0][iAgent][0], 0);
-        Score[iAgent] += scoreOutput(c[0][iAgent][0], 0);
-        Score[iAgent] += scoreOutput(d[0][iAgent][0], 1);
-
-        if (Score[iAgent] > 320)
-            Score[iAgent] += 10;
-        if (Score[iAgent] > 370)
-            Score[iAgent] += 30;
-        if (Score[iAgent] > 390)
-            Score[iAgent] += 60;
-        if (Score[iAgent] > 395)
-            Score[iAgent] += 100;
+    function scoreOutput(output, expected) {
+        return (1 - Math.abs(expected - output)) * 100;
     }
 
-    const hiScore = Math.max(...Score);
-    const Average = Score.reduce((a, b) => a + b, 0) / agentNum;
-    const WinnerAgent = Score.indexOf(hiScore);
+    function evaluatePopulation() {
+        const a = nnetga.update(test1);
+        const b = nnetga.update(test2);
+        const c = nnetga.update(test3);
+        const d = nnetga.update(test4);
+        const Score = Array(agentNum).fill(0);
 
-    return { Score, hiScore, Average, WinnerAgent, a, b, c, d };
-}
+        for (let iAgent = 0; iAgent < agentNum; iAgent++) {
+            Score[iAgent] += scoreOutput(a[0][iAgent][0], 1);
+            Score[iAgent] += scoreOutput(b[0][iAgent][0], 0);
+            Score[iAgent] += scoreOutput(c[0][iAgent][0], 0);
+            Score[iAgent] += scoreOutput(d[0][iAgent][0], 1);
 
-let result;
+            if (Score[iAgent] > 320)
+                Score[iAgent] += 10;
+            if (Score[iAgent] > 370)
+                Score[iAgent] += 30;
+            if (Score[iAgent] > 390)
+                Score[iAgent] += 60;
+            if (Score[iAgent] > 395)
+                Score[iAgent] += 100;
+        }
 
-for (let i = 0; i < generations; i++) {
+        const hiScore = Math.max(...Score);
+        const Average = Score.reduce((a, b) => a + b, 0) / agentNum;
+        const WinnerAgent = Score.indexOf(hiScore);
+
+        return { Score, hiScore, Average, WinnerAgent, a, b, c, d };
+    }
+
+    let result;
+
+    for (let i = 0; i < generations; i++) {
+        result = evaluatePopulation();
+        nnetga.next_gen(0, result.Score, 1, 1, 1);
+        if (i % 50 === 0)
+            console.log({ Generation: i, Average: result.Average, Best: result.hiScore });
+
+    }
     result = evaluatePopulation();
-    nnetga.next_gen(0, result.Score, 1, 1, 1);
-    if (i % 50 === 0)
-        console.log({ Generation: i, Average: result.Average, Best: result.hiScore });
-
-}
-result = evaluatePopulation();
-console.log("Agent:", result.WinnerAgent, " winner with:", result.hiScore);
-console.log("Average score:", result.Average);
-// nnetga.info_net(0, result.WinnerAgent, 1);
-console.log("0, 1 ->", result.a[0][result.WinnerAgent][0]);
-console.log("0, 0 ->", result.b[0][result.WinnerAgent][0]);
-console.log("1, 1 ->", result.c[0][result.WinnerAgent][0]);
-console.log("1, 0 ->", result.d[0][result.WinnerAgent][0]);
-console.log("----");
+    console.log("Agent:", result.WinnerAgent, " winner with:", result.hiScore);
+    console.log("Average score:", result.Average);
+    // nnetga.info_net(0, result.WinnerAgent, 1);
+    console.log("0, 1 ->", result.a[0][result.WinnerAgent][0]);
+    console.log("0, 0 ->", result.b[0][result.WinnerAgent][0]);
+    console.log("1, 1 ->", result.c[0][result.WinnerAgent][0]);
+    console.log("1, 0 ->", result.d[0][result.WinnerAgent][0]);
+    console.log("----");
 }).catch(error => {
     console.error(error);
     process.exit(1);

@@ -10,7 +10,9 @@
 
 <body>
     <script type="module">
-        import * as nnetga from './nnetga.js';
+        import { NNetGA } from './nnetga.js';
+
+        const nnetga = new NNetGA();
 
         let agentNum = 50;
         let generations = 1000;
